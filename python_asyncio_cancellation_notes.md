@@ -57,7 +57,7 @@ done with exception
 cancelled
 ```
 
-`Future` 不一定代表一个正在执行的 coroutine。它也可能只是某个外部事件的结果接收器。
+`Future` 不一定代表一个正在执行的 coroutine。它也可能只是某个外部事件的结果接收器即回调
 
 ### 2.4 Task
 
@@ -103,7 +103,7 @@ async def work():
     await asyncio.sleep(100)
 ```
 
-如果外部取消 `work()` 对应的 task，`CancelledError` 通常会在 `await asyncio.sleep(100)` 这里抛出。
+如果外部取消 `work()` 对应的 task，`CancelledError` 通常会在 `await asyncio.sleep(100)` 这里抛出，然后整个当前 task 退出。
 
 ### 3.2 取消请求不等于取消已经完成
 
@@ -140,7 +140,7 @@ async def work():
 经验规则：
 
 ```text
-不要 create_task 后不管。
+不要裸 create_task 后不管。
 
 创建 task 后，要明确：
   谁 await 它；
@@ -159,7 +159,6 @@ async def work():
 
 ```python
 import asyncio
-
 
 async def work():
     await asyncio.sleep(100)
@@ -208,6 +207,43 @@ task 正常完成
 
 ```text
 task 被取消
+```
+
+这里要和另一个情况区分开：`task.cancel()` 只是发出取消请求，取消请求和 task 正常完成之间可能存在竞争。
+
+如果取消请求还没有真正注入到 coroutine，task 就已经正常返回了，那么调用方也可能看到正常完成：
+
+```text
+cancel request 发出
+CancelledError 还没注入
+task 正好 return
+调用方看到正常结果
+```
+
+如果 `CancelledError` 已经注入，并且 coroutine 没有吞掉它，而是继续向外传播，那么调用方看到的是取消：
+
+```text
+cancel request 发出
+CancelledError 注入
+coroutine 没有捕获，或者捕获后重新 raise
+调用方看到 task 被取消
+```
+
+如果 `CancelledError` 已经注入，但 coroutine 捕获后没有重新抛出，而是正常 `return`，那么调用方通常看到正常完成：
+
+```text
+cancel request 发出
+CancelledError 注入
+coroutine 捕获并 return
+调用方看到正常结果
+```
+
+所以准确地说：
+
+```text
+task.cancel() 只是请求取消；
+最终是正常完成还是 cancelled，
+取决于取消是否来得及注入，以及 coroutine 是否传播 CancelledError。
 ```
 
 ### 4.4 推荐写法
@@ -265,7 +301,6 @@ import asyncio
 async def work():
     await asyncio.sleep(100)
 
-
 async def main():
     task = asyncio.create_task(work())
     try:
@@ -273,7 +308,6 @@ async def main():
     except asyncio.TimeoutError:
         print("timeout")
         print(task.cancelled())
-
 
 asyncio.run(main())
 ```
@@ -293,10 +327,8 @@ wait_for 是一个外层等待器；它超时时，会主动对它正在等待�
 ```python
 import asyncio
 
-
 async def cleanup():
     await asyncio.sleep(2)
-
 
 async def work():
     try:
@@ -304,14 +336,12 @@ async def work():
     finally:
         await cleanup()
 
-
 async def main():
     task = asyncio.create_task(work())
     try:
         await asyncio.wait_for(task, timeout=1)
     except asyncio.TimeoutError:
         print("timeout after cancellation cleanup")
-
 
 asyncio.run(main())
 ```
@@ -355,11 +385,9 @@ await asyncio.wait_for(asyncio.shield(task), timeout=1)
 ```python
 import asyncio
 
-
 async def warmup_cache():
     await asyncio.sleep(10)
     print("cache warmed")
-
 
 async def main():
     task = asyncio.create_task(warmup_cache())
@@ -369,7 +397,6 @@ async def main():
         print("this request stops waiting, warmup continues")
 
     await task
-
 
 asyncio.run(main())
 ```
@@ -384,7 +411,6 @@ asyncio.run(main())
 
 ```python
 connect_task = asyncio.create_task(connect_db())
-
 
 async def handler():
     try:
@@ -418,10 +444,8 @@ task.cancel()
 ```python
 import asyncio
 
-
 async def child():
     await asyncio.sleep(100)
-
 
 async def work():
     t = asyncio.create_task(child())
@@ -542,11 +566,9 @@ await asyncio.gather(*tasks, return_exceptions=True)
 async def level3():
     await asyncio.sleep(100)
 
-
 async def level2():
     tasks = [asyncio.create_task(level3()) for _ in range(3)]
     await asyncio.gather(*tasks)
-
 
 async def level1():
     tasks = [asyncio.create_task(level2()) for _ in range(3)]
@@ -683,18 +705,15 @@ async def work():
 async def level3():
     await asyncio.sleep(100)
 
-
 async def level2():
     async with asyncio.TaskGroup() as tg:
         for _ in range(3):
             tg.create_task(level3())
 
-
 async def level1():
     async with asyncio.TaskGroup() as tg:
         for _ in range(3):
             tg.create_task(level2())
-
 
 async def work():
     async with asyncio.TaskGroup() as tg:
@@ -803,11 +822,9 @@ async def work():
 ```python
 import threading
 
-
 def blocking_func(stop):
     while not stop.is_set():
         do_one_chunk()
-
 
 async def work():
     stop = threading.Event()

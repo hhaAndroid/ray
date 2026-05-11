@@ -292,7 +292,6 @@ import ray
 
 ray.init()
 
-
 @ray.remote
 class Worker:
     def slow(self):
@@ -301,7 +300,6 @@ class Worker:
 
     def fast(self):
         return "fast done"
-
 
 w = Worker.remote()
 
@@ -330,7 +328,6 @@ import ray
 
 ray.init()
 
-
 @ray.remote
 class Worker:
     def loop(self):
@@ -340,7 +337,6 @@ class Worker:
                 return "stopped early"
             time.sleep(0.1)
         return "done"
-
 
 w = Worker.remote()
 ref = w.loop.remote()
@@ -368,7 +364,6 @@ import ray
 
 ray.init()
 
-
 @ray.remote
 class Worker:
     async def wait(self):
@@ -377,7 +372,6 @@ class Worker:
         except asyncio.CancelledError:
             print("async task got CancelledError")
             raise
-
 
 w = Worker.remote()
 ref = w.wait.remote()
@@ -401,7 +395,6 @@ import ray
 
 ray.init()
 
-
 @ray.remote
 class Worker:
     async def cpu_bound(self):
@@ -409,7 +402,6 @@ class Worker:
         for i in range(10**12):
             total += i
         return total
-
 
 w = Worker.remote()
 ref = w.cpu_bound.remote()
@@ -450,13 +442,11 @@ import ray
 
 ray.init()
 
-
 def cpu_chunk():
     total = 0
     for i in range(10**6):
         total += i
     return total
-
 
 @ray.remote
 class Worker:
@@ -478,13 +468,11 @@ import ray
 
 ray.init()
 
-
 def heavy_cpu_work():
     total = 0
     for i in range(10**12):
         total += i
     return total
-
 
 @ray.remote
 class Worker:
@@ -511,7 +499,6 @@ def heavy_cpu_work(stop):
         for i in range(10**6):
             total += i
     return total
-
 
 @ray.remote
 class Worker:
@@ -540,19 +527,16 @@ import ray
 
 ray.init()
 
-
 @ray.remote
 def child():
     time.sleep(100)
     return "child done"
-
 
 @ray.remote
 class Worker:
     def parent(self):
         ref = child.remote()
         return ray.get(ref)
-
 
 w = Worker.remote()
 ref = w.parent.remote()
@@ -634,411 +618,19 @@ Ray actor task cancellation 是协作式取消。
 
 ## 16. asyncio wait_for 超时和 Ray task 取消的区别
 
-这一节单独解释一个容易混淆的问题：
+这一节只保留 Ray 侧结论。Python `asyncio` 的 `Future`、`Task`、`CancelledError`、`wait_for`、`shield`、`gather`、`TaskGroup` 和同步 CPU 段取消延迟等基础语义，统一看 [python_asyncio_cancellation_notes.md](/mnt/shared-storage-user/huanghaian/code/ray/python_asyncio_cancellation_notes.md:1)。
 
-```python
-await asyncio.wait_for(actor.method.remote(), timeout=1)
-```
-
-超时后，actor method 会不会自动被 Ray 取消？
-
-答案是：不会。
-
-要理解这个问题，先要区分 Python asyncio 里的 `Future` / `Task`，以及 Ray 里的 `ObjectRef` / actor task。
-
-### 16.1 Python asyncio 里的 Future 和 Task
-
-在 asyncio 中，`Future` 表示一个未来会完成的结果。
-
-`Task` 是 `Future` 的一种特殊形式。它包装了一个 coroutine，并且由当前 event loop 负责调度执行。
-
-例如：
-
-```python
-import asyncio
-
-
-async def work():
-    await asyncio.sleep(10)
-    return "done"
-
-
-async def main():
-    task = asyncio.create_task(work())
-    result = await task
-    print(result)
-
-
-asyncio.run(main())
-```
-
-这里 `task` 既是一个可以 `await` 的对象，也是 `work()` 这段 coroutine 的实际执行句柄。
-
-所以：
-
-```python
-task.cancel()
-```
-
-取消的是这个 asyncio task 本身。下一次 coroutine 被调度时，它会收到 `asyncio.CancelledError`。
-
-这就是为什么下面的代码能取消本地 asyncio task：
-
-```python
-import asyncio
-
-
-async def work():
-    try:
-        await asyncio.sleep(100)
-    except asyncio.CancelledError: # 不捕获也可以正常取消
-        print("work cancelled")
-        raise
-
-
-async def main():
-    task = asyncio.create_task(work())
-    try:
-        await asyncio.wait_for(task, timeout=1)
-    except asyncio.TimeoutError:
-        print("timeout")
-        print(task.cancelled())
-
-
-asyncio.run(main())
-```
-
-`asyncio.wait_for(task, timeout=1)` 的语义是：
+核心区别是：
 
 ```text
-等待 task 完成。
-如果超时，取消这个 task。
-等待取消过程完成，然后抛 TimeoutError。
+asyncio.wait_for:
+  控制本地 asyncio 等待超时。
+
+ray.cancel(ref):
+  请求 Ray runtime 取消 ref 对应的 task / actor task。
 ```
 
-在这个例子里，`task` 就是执行实体本身，所以 wait_for 超时会真正取消本地 coroutine。
-
-### 16.2 Python asyncio 取消机制注意点
-
-asyncio 的取消也是协作式取消，不是抢占式中断。
-
-调用：
-
-```python
-task.cancel()
-```
-
-并不是立即把 coroutine 停在当前机器指令上，而是向这个 `Task` 发出取消请求。等 coroutine 下一次恢复执行时，asyncio 会在它当前等待的位置注入 `asyncio.CancelledError`。
-
-所以最典型的取消点是 `await`：
-
-```python
-async def work():
-    await asyncio.sleep(100)
-```
-
-如果外部取消这个 task，`CancelledError` 会在 `await asyncio.sleep(100)` 这里被抛出。
-
-#### 16.2.1 不捕获取消异常也可以正常取消
-
-下面这个函数不捕获 `CancelledError`，也可以正常取消：
-
-```python
-async def work():
-    await asyncio.sleep(100)
-```
-
-取消发生时，`CancelledError` 会自动向外传播，task 最终进入 cancelled 状态。
-
-捕获 `CancelledError` 通常是为了打日志或清理资源：
-
-```python
-async def work():
-    try:
-        await asyncio.sleep(100)
-    except asyncio.CancelledError:
-        print("work cancelled")
-        raise
-```
-
-这里最后的 `raise` 很重要。它表示清理完以后继续传播取消。
-
-#### 16.2.2 捕获取消异常后不要随便吞掉
-
-如果捕获 `CancelledError` 但不重新抛出，取消就可能被吞掉：
-
-```python
-async def work():
-    try:
-        await asyncio.sleep(100)
-    except asyncio.CancelledError:
-        print("swallow cancellation")
-        return "not cancelled"
-```
-
-这时外部虽然发起了取消，但 `work()` 自己把取消异常吃掉并正常返回。调用方看到的可能不是 cancelled，而是一个正常结果。
-
-所以常见建议是：
-
-```text
-需要清理:
-  except CancelledError:
-      cleanup()
-      raise
-
-不需要清理:
-  不捕获 CancelledError，让它自然传播。
-```
-
-#### 16.2.3 cancel() 不保证立刻完成
-
-`task.cancel()` 只是请求取消。
-
-如果 coroutine 在收到 `CancelledError` 后还有清理逻辑，取消完成要等清理逻辑跑完：
-
-```python
-async def work():
-    try:
-        await asyncio.sleep(100)
-    finally:
-        await cleanup()
-```
-
-因此 `asyncio.wait_for(task, timeout=1)` 超时后，会取消 task，并等待取消过程完成。实际总耗时可能略超过 `timeout`，因为它要等 coroutine 响应取消和收尾。
-
-#### 16.2.4 没有 await 的长同步代码不会及时取消
-
-asyncio 取消需要 coroutine 回到调度点。
-
-如果 coroutine 里跑一大段同步 CPU 代码，中间没有 `await`，取消请求不会及时被处理：
-
-```python
-async def work():
-    total = 0
-    for i in range(10**12):
-        total += i
-    return total
-```
-
-这段代码会占住 event loop。即使外部调用了 `task.cancel()`，`CancelledError` 也要等 coroutine 重新回到 event loop 调度点后才有机会注入。
-
-改法通常是拆 chunk，并周期性 `await`：
-
-```python
-async def work():
-    total = 0
-    for _ in range(100000):
-        total += cpu_chunk()
-        await asyncio.sleep(0)
-    return total
-```
-
-`await asyncio.sleep(0)` 的作用是主动让出 event loop，让其他任务和取消请求有机会被处理。
-
-#### 16.2.5 work 里创建的子 task 不一定自动取消
-
-asyncio 不会因为“某些 task 是在 `work()` 里面创建的”，就自动把它们和 `work()` 绑定成父子生命周期。
-
-例如：
-
-```python
-async def child():
-    await asyncio.sleep(100)
-
-
-async def work():
-    t = asyncio.create_task(child())
-    await asyncio.sleep(100)
-```
-
-如果外部取消 `work()` 对应的 task，被取消的是 `work()` 当前正在等待的 `asyncio.sleep(100)`。`t` 这个 child task 不会因为它是在 `work()` 里创建的就自动取消。它可能继续运行。
-
-如果 `work()` 正在 await 这个 child task：
-
-```python
-async def work():
-    t = asyncio.create_task(child())
-    await t
-```
-
-那么取消 `work()` 时，取消会沿着当前 await 链路传到 `t`，child 通常也会被取消。
-
-但这个行为来自“当前正在 await 它”，不是来自“它是在 work 里面创建的”。
-
-#### 16.2.6 大量子 task 要显式管理
-
-如果一个 coroutine 创建了大量子 task，最好显式管理它们的取消：
-
-```python
-async def work():
-    tasks = [asyncio.create_task(child(i)) for i in range(100)]
-    try:
-        return await asyncio.gather(*tasks)
-    except asyncio.CancelledError:
-        for task in tasks:
-            task.cancel()
-        await asyncio.gather(*tasks, return_exceptions=True)
-        raise
-```
-
-这里的关键点是：
-
-```text
-父 coroutine 收到取消
-  -> 显式取消所有 child task
-  -> 等 child task 完成取消清理
-  -> 重新 raise CancelledError
-```
-
-如果使用 Python 3.11+，可以考虑 `asyncio.TaskGroup`：
-
-```python
-async def work():
-    async with asyncio.TaskGroup() as tg:
-        for i in range(100):
-            tg.create_task(child(i))
-```
-
-`TaskGroup` 是结构化并发。退出这个作用域时，它会管理组内任务的完成、异常和取消。父作用域被取消时，组内未完成任务也会被取消并等待收尾。
-
-#### 16.2.7 gather 和取消
-
-`asyncio.gather()` 常用于等待一组 awaitable：
-
-```python
-await asyncio.gather(task1, task2, task3)
-```
-
-如果等待 `gather()` 的外层 task 被取消，`gather()` 通常会把取消传播给它管理的未完成 awaitable。
-
-但如果你用 `create_task()` 创建了子 task，却没有把它们纳入当前 await 链路、`gather()` 或 `TaskGroup`，它们就可能变成后台任务，继续运行。
-
-所以经验规则是：
-
-```text
-创建了 task，就要有明确 owner。
-
-要么 await 它；
-要么放进 gather / TaskGroup；
-要么在取消路径里显式 cancel 它。
-```
-
-#### 16.2.8 shield 会阻断取消传播
-
-`asyncio.shield()` 可以保护里面的 awaitable，不让外层取消直接传进去。
-
-例如：
-
-```python
-task = asyncio.create_task(work())
-
-try:
-    await asyncio.wait_for(asyncio.shield(task), timeout=1)
-except asyncio.TimeoutError:
-    print("timeout, but task is still running")
-```
-
-这里 `wait_for` 超时后，只取消外层这次等待，不取消 `task` 本身。
-
-所以 `shield()` 的语义是：
-
-```text
-取消当前等待者可以；
-不要把这个取消传播到底层 awaitable。
-```
-
-这在“本地等待设置超时，但底层任务继续跑”时很有用。
-
-#### 16.2.9 asyncio 小结
-
-Python asyncio 的取消可以记成：
-
-```text
-Task.cancel():
-  请求取消本地 asyncio task。
-
-CancelledError:
-  在 coroutine 的调度点注入。
-
-不捕获 CancelledError:
-  正常传播取消。
-
-捕获后 raise:
-  做清理后继续取消。
-
-捕获后不 raise:
-  可能吞掉取消。
-
-create_task():
-  只创建后台 task，不自动建立父子取消关系。
-
-gather / TaskGroup:
-  更适合管理一组子 task 的生命周期。
-
-shield:
-  阻断外层取消向内传播。
-```
-
-### 16.3 Ray actor method 的 ObjectRef 是什么
-
-Ray actor method 调用是远端执行：
-
-```python
-ref = actor.method.remote()
-```
-
-这里发生的是：
-
-```text
-actor.method.remote()
-  -> 向 Ray runtime 提交 actor task
-  -> 返回 ObjectRef
-```
-
-`ObjectRef` 是远端结果的引用，不是 Python asyncio task。
-
-如果写：
-
-```python
-future = ref.as_future()
-```
-
-它表示：
-
-```text
-创建一个本地 Python Future
-注册回调：等 Ray ObjectRef ready 后，把结果填进这个 Future
-```
-
-这个本地 Future 只是等待 Ray 对象 ready 的结果接收器。
-
-取消它：
-
-```python
-future.cancel()
-```
-
-含义是：
-
-```text
-取消这个本地等待器。
-```
-
-不是：
-
-```text
-取消 Ray 里的 actor method task。
-```
-
-Ray actor task 已经提交到 Ray runtime 中。要取消它，必须显式调用：
-
-```python
-ray.cancel(ref)
-```
-
-### 16.4 wait_for(ref) 超时会发生什么
-
-如果直接 await Ray `ObjectRef`：
+因此：
 
 ```python
 ref = actor.long_running.remote()
@@ -1049,256 +641,331 @@ except asyncio.TimeoutError:
     print("local wait timed out")
 ```
 
-超时后，影响的是当前这次本地 asyncio 等待。
+这里超时只表示本地这次等待结束了，Ray actor method 不会因为 `wait_for` 超时而自动取消。actor method 可能仍然在 actor worker 上排队或执行。
 
-Ray actor method 不会因为这个 timeout 自动取消。它可能仍然在 actor worker 上排队或执行。
-
-后面仍然可以继续等待原始 `ObjectRef`：
-
-```python
-result = await ref
-```
-
-或者：
-
-```python
-result = ray.get(ref)
-```
-
-也就是说：
-
-```text
-asyncio.wait_for timeout:
-  取消本地等待
-  不自动 ray.cancel(ref)
-```
-
-### 16.5 wait_for(ref.as_future()) 和 shield
-
-如果使用 `ref.as_future()`：
+如果业务语义是“超时后取消这次 actor method”，需要显式调用：
 
 ```python
 ref = actor.long_running.remote()
-future = ref.as_future()
 
 try:
-    await asyncio.wait_for(future, timeout=1)
+    result = await asyncio.wait_for(ref, timeout=1)
 except asyncio.TimeoutError:
-    print("timeout")
+    ray.cancel(ref)
+    raise
 ```
 
-`wait_for` 超时时，会取消它等待的本地 `future`。
-
-这时通常是：
-
-```text
-future:
-  被标记为 cancelled
-
-Ray actor task:
-  继续运行
-
-ref:
-  仍然有效
-```
-
-因此后面再等同一个 `future`，可能会直接失败：
-
-```python
-await future  # 可能抛 CancelledError
-```
-
-但仍然可以等原始 `ref`：
-
-```python
-result = await ref
-```
-
-如果只是想给这一次等待设置超时，但不想把本地 `future` 标记为 cancelled，可以用 `asyncio.shield()`：
-
-```python
-ref = actor.long_running.remote()
-future = ref.as_future()
-
-try:
-    await asyncio.wait_for(asyncio.shield(future), timeout=1)
-except asyncio.TimeoutError:
-    print("timeout, but future is still usable")
-
-result = await future
-```
-
-`shield()` 的含义是：
-
-```text
-外层 wait_for 超时时，只取消这次等待；
-不要把取消传递给里面的 future。
-```
-
-注意：`shield()` 也不会取消或保护 Ray actor task。它只影响本地 asyncio Future 的取消传播。
-
-### 16.6 超时后如果想取消 Ray actor method
-
-如果业务语义是“等待 1 秒，超时就取消这次 actor method”，需要显式写：
-
-```python
-import asyncio
-import ray
-
-
-async def call_with_timeout(actor):
-    ref = actor.long_running.remote()
-    try:
-        return await asyncio.wait_for(ref, timeout=1)
-    except asyncio.TimeoutError:
-        ray.cancel(ref)
-        raise
-```
-
-这时有两个动作：
-
-```text
-asyncio.wait_for:
-  控制本地等待超时。
-
-ray.cancel(ref):
-  请求 Ray runtime 取消 ref 对应的 actor task。
-```
-
-取消之后，actor method 能不能及时停下，仍然取决于前面讲过的 actor task cancellation 语义：
+此时仍然要回到 Ray actor task cancellation 的语义：
 
 ```text
 还没执行:
   Ray 队列层可以直接取消。
 
 async actor 正在 await:
-  可以比较及时收到 CancelledError。
+  通过 asyncio.Task.cancel() 协作式取消，具体 Python 语义见 python_asyncio_cancellation_notes.md。
 
 async actor 正在跑同步 CPU:
-  不会及时取消。
+  event loop 被占住，不会及时取消。
 
 sync / threaded actor 正在运行:
-  只设置取消标记，需要用户代码检查 is_canceled()。
+  Ray 只设置取消标记，需要用户代码检查 is_canceled()。
 ```
 
-### 16.7 对比例子
+如果使用 `ref.as_future()`，`asyncio.wait_for(future, timeout=1)` 超时取消的是本地 Future 包装，不会自动反向调用 `ray.cancel(ref)`。原始 `ObjectRef` 仍然代表 Ray 里的远端结果引用。
 
-本地 asyncio task 会被 wait_for 超时取消：
+## 17. XTuner worker_task 取消代码分析
+
+本节分析 XTuner 中这段代码：
+
+```text
+/mnt/shared-storage-user/huanghaian/code/temp/xtuner/xtuner/v1/ray/dataflow/flow.py:261-276
+```
+
+### 17.1 原始代码逐行解释
+
+原始代码：
 
 ```python
-import asyncio
+# 发起一次远端 Ray actor method 调用。
+# env_run_ref 是 Ray ObjectRef，对应 env_controller.run.remote(...) 这次远端 actor task。
+# 注意：它不是本地 asyncio.Task。
+env_run_ref = self.env_controller.run.remote(  # type: ignore[attr-defined]
+    group_data_items,
+    sample_params=self.sample_params,
+    extra_params=self.extra_params,
+)
 
+try:
+    # 等 env_run_ref 对应的远端 Ray 调用完成。
+    #
+    # shield 的作用是阻断外层 asyncio 取消直接作用到这个 awaitable。
+    # 这里的设计意图是：本地 worker_task 被取消时，不让 asyncio 的取消语义
+    # 和 Ray 的取消语义混在一起；远端 Ray task 的取消交给下面的 ray.cancel。
+    group_data_items = await asyncio.shield(env_run_ref)
 
-async def local_work():
+except asyncio.CancelledError as exc:
+    # 当前 worker_task 这个本地 asyncio task 被取消了。
+    #
+    # 但本地 asyncio task 被取消，并不等于 env_run_ref 对应的 Ray actor method
+    # 已经被取消。所以这里显式调用 ray.cancel。
+    #
+    # recursive=True 是 Ray 的语义：让 Ray 尝试递归取消 env_controller.run
+    # 在运行期间提交出来的子 Ray task / actor task。
+    ray.cancel(env_run_ref, recursive=True)
+
     try:
-        await asyncio.sleep(100)
-    except asyncio.CancelledError:
-        print("local work cancelled")
-        raise
-
-
-async def main():
-    task = asyncio.create_task(local_work())
-    try:
-        await asyncio.wait_for(task, timeout=1)
-    except asyncio.TimeoutError:
-        print("local timeout")
-
-
-asyncio.run(main())
+        # 发出 Ray cancel 后，再给远端 env_run_ref 一点时间进入终态。
+        #
+        # 如果 env_controller.run 能及时返回 aborted / failed / skipped 等业务结果，
+        # 这里可以拿到 group_data_items，后续继续走 replay buffer / group_state 处理。
+        #
+        # 如果 env_run_ref 变成 TaskCancelledError、RayActorError，或者超时，
+        # 会进入下面的 except。
+        group_data_items = await asyncio.wait_for(
+            asyncio.shield(env_run_ref),
+            timeout=self.cancel_response_timeout,
+        )
+    except BaseException:
+        # 如果取消后等待远端响应失败，重新抛出最初的 asyncio CancelledError。
+        #
+        # 注意：这个写法会丢掉这里捕获到的真实异常上下文。
+        # 例如 wait_for 超时、Ray task cancelled、Ray actor died 等信息都会被遮住。
+        raise exc
 ```
 
-Ray actor method 不会被 wait_for 超时自动取消：
+这段代码的整体意图是合理的：
+
+```text
+本地 worker_task 被取消
+  -> 显式 ray.cancel(env_run_ref, recursive=True)
+  -> 尝试等待远端 env_run_ref 响应取消
+  -> 如果远端及时返回业务结果，则继续处理
+  -> 如果远端没及时响应，则向外传播 worker_task 的取消
+```
+
+### 17.2 这段代码的关键语义
+
+这里同时存在两层取消：
+
+```text
+asyncio cancel:
+  取消本地 worker_task 这个 asyncio.Task。
+
+ray.cancel:
+  取消 env_run_ref 对应的远端 Ray actor task。
+```
+
+这两层不是同一个东西。
+
+外层调用：
 
 ```python
-import asyncio
-import time
-import ray
-
-ray.init()
-
-
-@ray.remote
-class Worker:
-    def long_running(self):
-        time.sleep(10)
-        return "done"
-
-
-async def main():
-    w = Worker.remote()
-    ref = w.long_running.remote()
-
-    try:
-        await asyncio.wait_for(ref, timeout=1)
-    except asyncio.TimeoutError:
-        print("local wait timed out")
-
-    # Ray actor method 仍然可能继续执行。
-    print(await ref)
-
-
-asyncio.run(main())
+task.cancel()
 ```
 
-超时后显式取消 Ray actor method：
+只会取消本地 `worker_task()`。它不会自动等价于：
 
 ```python
-import asyncio
-import time
-import ray
-
-ray.init()
-
-
-@ray.remote
-class Worker:
-    def long_running(self):
-        for _ in range(100):
-            if ray.get_runtime_context().is_canceled():
-                return "stopped"
-            time.sleep(0.1)
-        return "done"
-
-
-async def main():
-    w = Worker.remote()
-    ref = w.long_running.remote()
-
-    try:
-        await asyncio.wait_for(ref, timeout=1)
-    except asyncio.TimeoutError:
-        ray.cancel(ref)
-        print("cancel requested")
-
-    try:
-        await ref
-    except ray.exceptions.TaskCancelledError:
-        print("ray task cancelled")
-
-
-asyncio.run(main())
+ray.cancel(env_run_ref)
 ```
 
-## 17. 最终记忆
+所以 `except asyncio.CancelledError` 里显式 `ray.cancel(env_run_ref, recursive=True)` 是必要的。
 
-把这几个概念分开：
+### 17.3 当前写法的隐含业务语义
+
+当前代码在一种情况下会“吞掉本地取消”：
+
+```text
+worker_task 收到 asyncio.CancelledError
+  -> ray.cancel(env_run_ref)
+  -> env_run_ref 在 cancel_response_timeout 内正常返回 group_data_items
+  -> worker_task 继续执行后续 group_state 逻辑
+  -> worker_task 最终可能正常 return
+```
+
+这是否正确，取决于业务语义。
+
+如果设计目标是：
+
+```text
+取消 worker_task 后，如果远端能返回 aborted / skipped / failed 样本，
+就继续把这些状态写回 replay buffer / metrics。
+```
+
+那么当前行为是合理的。
+
+如果设计目标是：
+
+```text
+只要 worker_task 收到取消，无论远端是否返回，都必须最终 cancelled。
+```
+
+那么拿到 `group_data_items` 后仍然应该 `raise exc`，而不是继续往下走。
+
+### 17.4 当前写法的问题
+
+第一，`except BaseException: raise exc` 太粗。
+
+它会隐藏取消收尾阶段的真实异常。
+
+更好的最低限度写法是：
+
+```python
+except BaseException as wait_exc:
+    raise exc from wait_exc
+```
+
+这样外层仍然看到原始取消，但异常链里保留了收尾失败的原因。
+
+第二，第二次 `asyncio.shield(env_run_ref)` 不一定有必要。
+
+第二次等待已经处在取消收尾路径：
+
+```text
+ray.cancel 已经发出；
+最多等 cancel_response_timeout；
+等不到就放弃等待并继续取消。
+```
+
+这时没有必要保护本地等待继续存在。`wait_for` 超时后取消本地这次等待是合理的。
+
+第三，第一次 `shield(env_run_ref)` 也不是绝对必要。
+
+即使不用 `shield`，本地 `await env_run_ref` 被取消后，原始 `env_run_ref` 仍然是 Ray ObjectRef。代码仍然可以在 `except asyncio.CancelledError` 里显式 `ray.cancel(env_run_ref)`，并再次等待它进入终态。
+
+因此更推荐把逻辑写成“普通 await + 显式 Ray cancel + bounded drain”，语义更直接。
+
+### 17.5 改进写法一：保留当前业务语义
+
+这个版本保留当前行为：如果远端在取消后及时返回 `group_data_items`，就继续处理后续 group state。
+
+```python
+env_run_ref = self.env_controller.run.remote(  # type: ignore[attr-defined]
+    group_data_items,
+    sample_params=self.sample_params,
+    extra_params=self.extra_params,
+)
+
+try:
+    # 正常路径：等待远端 Ray actor method 返回。
+    #
+    # 这里不使用 shield。worker_task 被取消时，本地 await 会抛 CancelledError；
+    # 但这只取消本地等待，不等于取消远端 Ray task。
+    # 远端 Ray task 的取消在 except 分支里显式处理。
+    group_data_items = await env_run_ref
+
+except asyncio.CancelledError as exc:
+    # 本地 worker_task 被取消后，显式取消远端 Ray actor task。
+    ray.cancel(env_run_ref, recursive=True)
+
+    try:
+        # 给远端 Ray task 一个有限窗口进入终态。
+        # 如果它及时返回业务结果，保留当前语义：继续处理 group_data_items。
+        group_data_items = await asyncio.wait_for(
+            env_run_ref,
+            timeout=self.cancel_response_timeout,
+        )
+    except BaseException as wait_exc:
+        # 远端没有及时完成、或者返回 Ray 取消/失败异常。
+        # 继续传播本地 worker_task 的取消，同时保留收尾失败的 cause。
+        raise exc from wait_exc
+```
+
+这个版本的特点：
+
+```text
+优点:
+  取消链路清楚；
+  不混用 shield；
+  保留 wait_exc 作为异常 cause；
+  保留“取消后远端及时返回则继续处理”的业务语义。
+
+注意:
+  worker_task 收到取消后，仍可能最终正常 return。
+```
+
+### 17.6 改进写法二：取消后一定向外传播取消
+
+如果业务希望 worker_task 一旦被取消，就必须最终表现为 cancelled，可以写成：
+
+```python
+env_run_ref = self.env_controller.run.remote(  # type: ignore[attr-defined]
+    group_data_items,
+    sample_params=self.sample_params,
+    extra_params=self.extra_params,
+)
+
+try:
+    group_data_items = await env_run_ref
+
+except asyncio.CancelledError as exc:
+    ray.cancel(env_run_ref, recursive=True)
+
+    try:
+        # 可选：等待远端收尾。
+        # 即使拿到结果，也不继续正常返回，只用于让远端有机会清理。
+        await asyncio.wait_for(
+            env_run_ref,
+            timeout=self.cancel_response_timeout,
+        )
+    except BaseException as wait_exc:
+        raise exc from wait_exc
+
+    # 远端及时结束，但本地 worker_task 仍然保持 cancelled 语义。
+    raise exc
+```
+
+这个版本的特点：
+
+```text
+优点:
+  worker_task 的取消语义更一致；
+  外层 task.cancel() 后，最终一定看到 worker_task 被取消。
+
+代价:
+  远端返回的 aborted / failed / skipped 业务结果不会继续进入后续 group_state 处理。
+```
+
+### 17.7 和 SingleTurnEnvironment 的关系
+
+`env_run_ref` 实际对应：
+
+```text
+SingleTurnEnvironment.run()
+  -> generate()
+      -> rollout_controller.rollout.remote(...)
+  -> judger_controller.run.remote(...)
+```
+
+因此 `ray.cancel(env_run_ref, recursive=True)` 会让 Ray 尝试递归取消它能追踪到的子 Ray tasks。
+
+但内层代码仍然应该处理自己的下游 refs。
+
+原因是：
+
+```text
+DataFlow 只知道 env_run_ref；
+SingleTurnEnvironment.generate 才知道 rollout response refs；
+SingleTurnEnvironment.run 才知道 judger_response_ref。
+```
+
+内层显式取消这些 refs 是合理的防御式设计，也能做业务级收尾，例如等待 rollout 返回 aborted/skipped/failed 状态。
+
+## 18. 最终记忆
+
+Ray 侧只记住这几件事：
 
 ```text
 asyncio.wait_for:
-  本地等待超时控制。
-
-asyncio.Task.cancel:
-  取消本地 event loop 里的 coroutine task。
-
-Future.cancel:
-  取消这个 Future；是否取消底层工作取决于 Future 是否连接到底层取消接口。
+  本地等待超时控制，不自动取消 Ray task。
 
 ray.cancel(ref):
   取消 Ray runtime 里的 task / actor task。
 
 ObjectRef:
-  Ray 远端结果引用，不是 asyncio Task。
+  Ray 远端结果引用，本身不是 Python asyncio Task。
 ```
 
 所以，`asyncio.wait_for` 超时不等于 `ray.cancel`。如果要取消 Ray actor method，必须显式调用 `ray.cancel(ref)`。
+
+Python asyncio 自身的取消细节统一参考 [python_asyncio_cancellation_notes.md](/mnt/shared-storage-user/huanghaian/code/ray/python_asyncio_cancellation_notes.md:1)。
