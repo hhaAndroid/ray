@@ -108,6 +108,42 @@ AsyncActor 里不要直接调用阻塞式 ray.get / ray.wait。
 
 因为它们会阻塞 event loop。
 
+如果一个 actor 类里同时有 async def 和普通 def，Ray 会把整个 actor 标记为 AsyncActor。之后 actor method 的执行会走 AsyncActor 的 event loop 调度路径。但普通 def 不会真的自动变成异步非阻塞代码。Ray 只是把它包了一层 async wrapper，大概等价于：
+
+```python
+async def wrapper(*args, **kwargs):
+    return original_sync_func(*args, **kwargs)
+```
+
+因此，普通 def 仍然是在 Ray actor event loop 线程里直接执行。如果普通 def 内部有 `time.sleep()`、阻塞 I/O、`ray.get()`、CPU 密集 Python 代码等，它会阻塞整个 event loop，导致同一个 AsyncActor 里的其他 coroutine 也无法继续推进。AsyncActor 的 `max_concurrency` 并不会自动把这些同步阻塞逻辑放进线程池。
+
+这里的 `max_concurrency=1000` 也不是 Python asyncio 的默认限制。Python asyncio 本身没有“最多 1000 个 task / coroutine”的默认上限；只要内存、文件描述符、socket、下游服务等资源撑得住，用户可以创建更多 asyncio task。
+
+
+Ray 的 `max_concurrency=1000` 是 AsyncActor 自己的默认 actor method 并发槽位上限，表示同一个 actor 内最多允许 1000 个 actor method 处于 in-flight 状态：
+
+```text
+driver 提交很多 actor tasks
+    -> Ray 可以先排队
+    -> AsyncActor 内部最多放行 max_concurrency 个 in-flight actor methods
+    -> 这些 methods 被提交到 Ray 创建的 event loop 上执行
+    -> 某个 method return / raise 后释放槽位
+    -> 后面的 task 再进入执行
+```
+
+所以，`max_concurrency` 限制的不是 event loop 底层 callback 队列容量，也不是 OS 线程数，而是 Ray actor method 的并发生命周期数量。每个 in-flight actor method 可能带来 coroutine / fiber 栈、Python 对象、参数反序列化、object ref、下游 RPC、`run_in_executor()` 排队等开销，因此实际业务中经常需要把它调小，而不是盲目调大。
+
+```bash
+asyncio:
+    你可以 create_task 很多很多个 task
+    asyncio 本身不设一个“最多 1000 个 task”的默认上限
+    限制主要来自内存、文件描述符、socket、下游服务、调度开销等资源
+
+  Ray AsyncActor:
+    默认 max_concurrency = 1000
+    Ray 用它限制同一个 actor 内同时 in-flight 的 actor method 数量
+```
+
 ## 3. Actor 类型如何判断
 
 源码中，`python/ray/actor.py` 会通过 `has_async_methods()` 判断 actor 类里是否有 async 方法。
@@ -666,3 +702,4 @@ AsyncActor:
 不要把 max_concurrency 当成无成本吞吐开关；
 不要忘记 async 代码在 await 点也会产生状态竞态。
 ```
+

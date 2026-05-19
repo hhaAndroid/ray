@@ -414,6 +414,8 @@ submit 节点 shell export FOO
     -> 会传给 train.py 和该 job 的 task/actor
 ```
 
+总结：ray start 之后 export 的变量，Ray 集群内的所有进程都看不到。要么走 runtime_env，要么在 ray start 之前设好环境变量，记住这一核心原则就行。
+
 ## 3. 验证脚本
 
 验证代码在：
