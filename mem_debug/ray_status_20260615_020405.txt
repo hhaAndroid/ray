@@ -1,0 +1,33 @@
+# command: ray status
+# started_at: 2026-06-15T02:04:05+00:00
+======== Autoscaler status: 2026-06-15 02:04:02.864074 ========
+Node status
+---------------------------------------------------------------
+Active:
+ 1 node_9d5ce46a438557e24bbc4cb21fe03495444b8bbedc152aa7fd3cee77
+ 1 node_f4d0812430bece7b3ec290db9f1b9c8d3b24a167933274b05cc908fd
+ 1 node_9959a5f1a2b1d9fd422dab0eec2efe7013fb6c56523f694702247219
+ 1 node_0ca951ca61718a36ee9a5790910b00ab9f392e4e0bb1319be6acb2c3
+ 1 node_4ba0f12d6dcc712a778b50b03f944157ab947375e13434c4db6c7a38
+ 1 node_10b0215099f4e6ce5edbbaf89402644718c8db9d6ac715424b07f59c
+ 1 node_9d13c16f6a6b3349c571eee68aa4127197e12ac7b67d460b1da522f6
+ 1 node_12f51f68b729a4cfe6157b51c2336ebf658512093ff244b7d4c288e5
+Pending:
+ (no pending nodes)
+Recent failures:
+ (no failures)
+
+Resources
+---------------------------------------------------------------
+Total Usage:
+ 108.92000000000002/1024.0 CPU (1.920000000000016 used of 256.0 reserved in placement groups)
+ 3.1999999999999957/64.0 GPU (3.1999999999999957 used of 64.0 reserved in placement groups)
+ 298.00GiB/6.94TiB memory (0B used of 1.00TiB reserved in placement groups)
+ 119.06GiB/1.46TiB object_store_memory
+
+From request_resources:
+ (none)
+Pending Demands:
+ (no resource demands)
+# finished_at: 2026-06-15T02:04:07+00:00
+# exit_status: 0

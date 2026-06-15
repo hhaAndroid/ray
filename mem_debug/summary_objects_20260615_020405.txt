@@ -1,0 +1,66 @@
+# command: ray summary objects
+# started_at: 2026-06-15T02:04:07+00:00
+/usr/local/lib/python3.12/dist-packages/ray/util/state/api.py:385: UserWarning: The returned data may contain incomplete result. 10745 (42102 total from the cluster) objects are retrieved from the data source. 31357 entries have been truncated. Max of 10745 entries are retrieved from data source to prevent over-sized payloads.
+  warnings.warn(
+
+======== Object Summary: 2026-06-15 02:04:09.771941 ========
+Stats:
+------------------------------------
+callsite_enabled: false
+total_objects: 10000
+total_size_mb: 113881.75254535675
+
+
+Table (group by callsite)
+------------------------------------
+<unknown>
+    REF_TYPE_COUNTS        TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ---------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 5757  '1': 5757                     NIL: 5757            1                  1                    5757             61237.6
+
+
+
+disabled
+    REF_TYPE_COUNTS       TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  --------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 166  '1': 166                      NIL: 166             7                  48                   166              1625.24
+
+
+
+(put object)  
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:wrapper:104 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:auto_init_wrapper:22 
+| /mnt/shared-storage-user/huanghaian/code/lmdeploy/lmdeploy/pytorch/engine/executor/ray_executor.py:forward_async:513
+    REF_TYPE_COUNTS      TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  -------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 64  '1': 64                       FINISHED: 64         8                  64                   64               0.984482
+
+
+
+(put object)  
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:wrapper:104 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:auto_init_wrapper:22 
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/rl/agent_loop_manager/sampler.py:put_to_ray:70
+    REF_TYPE_COUNTS        TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ---------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 3916  '1': 3916                     FINISHED: 3916       1                  1                    3916             38027.1
+
+
+
+(deserialize actor task arg) xtuner.v1.rl.trainer.worker.TrainingWorker.fit
+    REF_TYPE_COUNTS       TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  --------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   PINNED_IN_MEMORY: 64  '1': 64                       NIL: 64              8                  59                   64               8570.39
+
+
+
+(actor call)  
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/rl/trainer/controller.py:fit:254 
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/train/rl_trainer.py:_train_one_batch:951 
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/train/rl_trainer.py:fit:1700
+    REF_TYPE_COUNTS           TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ------------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   USED_BY_PENDING_TASK: 33  '1': 33                       FINISHED: 33         1                  1                    33               4420.43
+
+# finished_at: 2026-06-15T02:04:09+00:00
+# exit_status: 0

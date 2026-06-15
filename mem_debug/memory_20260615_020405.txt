@@ -1,0 +1,8 @@
+# command: ray memory --stats-only
+# started_at: 2026-06-15T02:04:09+00:00
+======== Object references status: 2026-06-15 02:04:11.327848 ========
+--- Aggregate object store stats across all nodes ---
+Plasma memory usage 204631 MiB, 249043 objects, 13.41% full, 7.99% needed
+
+# finished_at: 2026-06-15T02:04:11+00:00
+# exit_status: 0

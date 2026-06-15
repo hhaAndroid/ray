@@ -1,0 +1,139 @@
+# command: ray summary objects
+# started_at: 2026-06-15T01:33:40+00:00
+/usr/local/lib/python3.12/dist-packages/ray/util/state/api.py:385: UserWarning: The returned data may contain incomplete result. 23884 (68472 total from the cluster) objects are retrieved from the data source. 44588 entries have been truncated. Max of 23884 entries are retrieved from data source to prevent over-sized payloads.
+  warnings.warn(
+
+======== Object Summary: 2026-06-15 01:33:44.388345 ========
+Stats:
+------------------------------------
+callsite_enabled: false
+total_objects: 10000
+total_size_mb: 76935.60196971893
+
+
+Table (group by callsite)
+------------------------------------
+<unknown>
+    REF_TYPE_COUNTS           TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ------------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   CAPTURED_IN_OBJECT: 23    '1': 5694                     NIL: 5694            1                  2                    5694             45736
+    LOCAL_REFERENCE: 5577
+    USED_BY_PENDING_TASK: 94
+
+
+
+(deserialize actor task arg) xtuner.v1.rl.rollout.controller.RolloutController.generate
+    REF_TYPE_COUNTS            TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  -------------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   PINNED_IN_MEMORY: 129      '1': 593                      NIL: 593             1                  1                    593              1511.74
+    USED_BY_PENDING_TASK: 464
+
+
+
+(deserialize actor task arg) xtuner.v1.rl.rollout.lmdeploy.LMDeployWorker.generate
+    REF_TYPE_COUNTS        TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ---------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 1275  '1': 1525                     NIL: 1525            8                  63                   1525             5445.11
+    PINNED_IN_MEMORY: 250
+
+
+
+/mnt/shared-storage-user/llmit/user/lvchengqi/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/lib/python3.12/threading.py:run:1012 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/lib/python3.12/threading.py:_bootstrap_inner:1075 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/lib/python3.12/threading.py:_bootstrap:1032
+    REF_TYPE_COUNTS       TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  --------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 403  '1': 403                      NIL: 403             8                  61                   403              11085.9
+
+
+
+(deserialize actor task arg) lmdeploy.pytorch.engine.executor.ray_executor.RayWorkerWrapper.forward_async
+    REF_TYPE_COUNTS       TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  --------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   PINNED_IN_MEMORY: 35  '1': 35                       NIL: 35              8                  35                   35               5.46891
+
+
+
+(put object)  
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:wrapper:104 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:auto_init_wrapper:22 
+| /mnt/shared-storage-user/huanghaian/code/lmdeploy/lmdeploy/pytorch/engine/executor/ray_executor.py:forward_async:513
+    REF_TYPE_COUNTS           TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ------------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 24       '1': 64                       FINISHED: 64         8                  64                   64               9.16533
+    USED_BY_PENDING_TASK: 40
+
+
+
+(put object)  
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:wrapper:104 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:auto_init_wrapper:22 
+| /mnt/shared-storage-user/huanghaian/code/lmdeploy/lmdeploy/pytorch/engine/engine_instance.py:put:81
+    REF_TYPE_COUNTS     TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 3  '1': 3                        FINISHED: 3          1                  1                    3                19.5784
+
+
+
+(put object)  
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:wrapper:104 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:auto_init_wrapper:22 
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/rl/rollout/lmdeploy.py:_decode_routed_experts:347
+    REF_TYPE_COUNTS      TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  -------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 13  '1': 13                       FINISHED: 13         6                  12                   13               53.03
+
+
+
+(actor call)  
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/rl/rollout/controller.py:generate:222 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/util/tracing/tracing_helper.py:_resume_span:493 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/lib/python3.12/threading.py:run:1012
+    REF_TYPE_COUNTS            TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS        TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  -------------------------  ----------------------------  -----------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 15        '1': 265                      FINISHED: 250            1                  1                    265              71.1385
+    USED_BY_PENDING_TASK: 250                                SUBMITTED_TO_WORKER: 15
+
+
+
+(actor call)  
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/rl/agent_loop/single_turn_agent_loop.py:generate_sample:77 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/lib/python3.12/asyncio/events.py:_run:88 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py:_run_once:1999
+    REF_TYPE_COUNTS           TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS       TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ------------------------  ----------------------------  ----------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 7        '1': 38                       FINISHED: 31            1                  1                    38               9.56067
+    PINNED_IN_MEMORY: 2                                     SUBMITTED_TO_WORKER: 7
+    USED_BY_PENDING_TASK: 29
+
+
+
+(actor call)  
+| /mnt/shared-storage-user/huanghaian/code/lmdeploy/lmdeploy/pytorch/engine/mp_engine/ray_engine.py:_collective_rpc_async:198 
+| /mnt/shared-storage-user/huanghaian/code/lmdeploy/lmdeploy/pytorch/engine/mp_engine/ray_engine.py:_collective_rpc_streaming_async:241 
+| /mnt/shared-storage-user/huanghaian/code/lmdeploy/lmdeploy/pytorch/engine/mp_engine/base.py:async_stream_infer:146
+    REF_TYPE_COUNTS      TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS        TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  -------------------  ----------------------------  -----------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 15  '1': 15                       FINISHED: 3              8                  14                   15               0.00163841
+                                                       SUBMITTED_TO_WORKER: 12
+
+
+
+disabled
+    REF_TYPE_COUNTS      TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  -------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   PINNED_IN_MEMORY: 1  '1': 1                        NIL: 1               1                  1                    1                10.2674
+
+
+
+(put object)  
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/client_mode_hook.py:wrapper:104 
+| /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/auto_init_hook.py:auto_init_wrapper:22 
+| /mnt/shared-storage-user/huanghaian/code/xtuner/xtuner/v1/rl/agent_loop_manager/sampler.py:put_to_ray:70
+    REF_TYPE_COUNTS           TASK_ATTEMPT_NUMBER_COUNTS    TASK_STATE_COUNTS    TOTAL_NUM_NODES    TOTAL_NUM_WORKERS    TOTAL_OBJECTS    TOTAL_SIZE_MB
+--  ------------------------  ----------------------------  -------------------  -----------------  -------------------  ---------------  ---------------
+0   LOCAL_REFERENCE: 1307     '1': 1351                     FINISHED: 1351       1                  1                    1351             12978.7
+    USED_BY_PENDING_TASK: 44
+
+# finished_at: 2026-06-15T01:33:44+00:00
+# exit_status: 0

@@ -1,0 +1,132 @@
+# command: collect_top_rss
+# started_at: 2026-06-15T02:00:42+00:00
+    PID    PPID   RSS    VSZ COMMAND         COMMAND
+   3135    3021 267716428 350260496 python   python xtuner/v1/train/cli/rl.py --config workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py
+   2023       1 170022760 598090456 raylet   /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/core/src/ray/raylet/raylet --raylet_socket_name=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/sockets/raylet --store_socket_name=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/sockets/plasma_store --object_manager_port=0 --min_worker_port=10002 --max_worker_port=19999 --node_manager_port=0 --node_id=9959a5f1a2b1d9fd422dab0eec2efe7013fb6c56523f694702247219 --node_ip_address=10.102.252.52 --maximum_startup_concurrency=1 --static_resource_list=node:10.102.252.52,1.0,node:__internal_head__,1.0,accelerator_type:H200,1,CPU,128,GPU,8,memory,953239859200,object_store_memory,200000000000 --python_worker_command=/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/workers/setup_worker.py /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/workers/default_worker.py --node-ip-address=10.102.252.52 --node-manager-port=RAY_NODE_MANAGER_PORT_PLACEHOLDER --object-store-name=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/sockets/plasma_store --raylet-name=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/sockets/raylet --redis-address=None --metrics-agent-port=0 --logging-rotate-bytes=536870912 --logging-rotate-backup-count=5 --runtime-env-agent-port=0 --gcs-address=10.102.252.52:6379 --session-name=session_2026-06-14_12-16-33_870519_1059 --temp-dir=/tmp/ray_log --webui=10.102.252.52:8265 --cluster-id=b118d66c5063248a2d76cf5a66f8a95b40a1912fd241f8278727c937 RAY_WORKER_DYNAMIC_OPTION_PLACEHOLDER --java_worker_command= --cpp_worker_command= --native_library_path=/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/cpp/lib --temp_dir=/tmp/ray_log --session_dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --log_dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --resource_dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/runtime_resources --metrics-agent-port=0 --metrics_export_port=0 --runtime_env_agent_port=0 --object_store_memory=200000000000 --plasma_directory=/dev/shm --fallback_directory=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --ray-debugger-external=0 --gcs-address=10.102.252.52:6379 --session-name=session_2026-06-14_12-16-33_870519_1059 --labels={"ray.io/accelerator-type": "H200"} --cluster-id=b118d66c5063248a2d76cf5a66f8a95b40a1912fd241f8278727c937 --stdout_filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/raylet.out --stderr_filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/raylet.err --head --num_prestart_python_workers=128 --dashboard_agent_command=/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -u /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/dashboard/agent.py --node-id=9959a5f1a2b1d9fd422dab0eec2efe7013fb6c56523f694702247219 --node-ip-address=10.102.252.52 --metrics-export-port=0 --grpc-port=0 --listen-port=52365 --node-manager-port=RAY_NODE_MANAGER_PORT_PLACEHOLDER --object-store-name=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/sockets/plasma_store --raylet-name=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/sockets/raylet --temp-dir=/tmp/ray_log --session-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --log-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --logging-rotate-bytes=536870912 --logging-rotate-backup-count=5 --session-name=session_2026-06-14_12-16-33_870519_1059 --gcs-address=10.102.252.52:6379 --cluster-id-hex=b118d66c5063248a2d76cf5a66f8a95b40a1912fd241f8278727c937 --stdout-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/dashboard_agent.out --stderr-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/dashboard_agent.err --head --runtime_env_agent_command=/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -u /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/runtime_env/agent/main.py --node-id=9959a5f1a2b1d9fd422dab0eec2efe7013fb6c56523f694702247219 --node-ip-address=10.102.252.52 --runtime-env-agent-port=0 --session-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --gcs-address=10.102.252.52:6379 --cluster-id-hex=b118d66c5063248a2d76cf5a66f8a95b40a1912fd241f8278727c937 --runtime-env-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/runtime_resources --logging-rotate-bytes=536870912 --logging-rotate-backup-count=5 --log-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --temp-dir=/tmp/ray_log --stdout-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/runtime_env_agent.out --stderr-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/runtime_env_agent.err --node-name=10.102.252.52
+   5257    2023 90695916 217865772 ray::RolloutCon ray::RolloutController
+   5758    2023 84017896 215059740 ray::LMDeployWo ray::LMDeployWorker
+   5400    2023 83654268 215069400 ray::LMDeployWo ray::LMDeployWorker
+   5634    2023 83108888 215068992 ray::LMDeployWo ray::LMDeployWorker
+   5884    2023 82971440 215082460 ray::LMDeployWo ray::LMDeployWorker
+   6188    2023 82963072 215058096 ray::LMDeployWo ray::LMDeployWorker
+   6314    2023 82797908 215033884 ray::LMDeployWo ray::LMDeployWorker
+   7625    2023 82795420 219723508 ray::RayEngineW ray::RayEngineWorker
+   5516    2023 82496644 215009880 ray::LMDeployWo ray::LMDeployWorker
+   8425    2023 82301168 219975696 ray::RayEngineW ray::RayEngineWorker
+   8579    2023 82276396 220412204 ray::RayEngineW ray::RayEngineWorker
+   7748    2023 82243312 219023080 ray::RayEngineW ray::RayEngineWorker
+   7902    2023 82144624 219939636 ray::RayEngineW ray::RayEngineWorker
+   8257    2023 82079404 220109732 ray::RayEngineW ray::RayEngineWorker
+   8058    2023 81839900 220118796 ray::RayEngineW ray::RayEngineWorker
+   6015    2023 81334088 215008168 ray::LMDeployWo ray::LMDeployWorker
+   7497    2023 81233112 219390280 ray::RayEngineW ray::RayEngineWorker
+  10471    2023 54073436 387710484 ray::RayWorkerW ray::RayWorkerWrapper
+   8932    2023 54033900 387653300 ray::RayWorkerW ray::RayWorkerWrapper
+   8755    2023 53591704 387701448 ray::RayWorkerW ray::RayWorkerWrapper
+   9335    2023 53444464 387752292 ray::RayWorkerW ray::RayWorkerWrapper
+  10787    2023 53285996 387669652 ray::RayWorkerW ray::RayWorkerWrapper
+   9935    2023 53237744 387700948 ray::RayWorkerW ray::RayWorkerWrapper
+   9503    2023 53048576 387701108 ray::RayWorkerW ray::RayWorkerWrapper
+   9177    2023 52913260 387775248 ray::RayWorkerW ray::RayWorkerWrapper
+   3975    2023 40353160 1845147260 ray::TrainingWo ray::TrainingWorker
+   4132    2023 40177192 1844818408 ray::TrainingWo ray::TrainingWorker
+   4273    2023 40171152 1845140052 ray::TrainingWo ray::TrainingWorker
+   4413    2023 40003528 1845183392 ray::TrainingWo ray::TrainingWorker
+   3722    2023 39917368 1844853248 ray::TrainingWo ray::TrainingWorker
+   3498    2023 39731768 1845287308 ray::TrainingWo ray::TrainingWorker
+   3860    2023 39297004 1845070912 ray::TrainingWo ray::TrainingWorker
+   3609    2023 38569008 1845074348 ray::TrainingWo ray::TrainingWorker
+   6514    2023 13472900 216250628 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+  12975    2023 13158580 203772072 ray::JudgerActo ray::JudgerActor
+   7249    2023 13144684 216122776 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+   6873    2023 12946772 216207384 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+   7373    2023 12851248 216202924 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+   6632    2023 12810008 216157716 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+   7115    2023 12735892 216054992 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+   6993    2023 12555560 216221808 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+   6754    2023 12299400 216158724 ray::run_lmdepl ray::run_lmdeploy_server_wrapper
+  13131    2023 2504304 203220592 ray::JudgerActo ray::JudgerActor
+  28788    3135 1843488 250080260 pt_data_worker python xtuner/v1/train/cli/rl.py --config workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py
+  28787    3135 1839808 250051448 pt_data_worker python xtuner/v1/train/cli/rl.py --config workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py
+  28790    3135 1839668 250051472 pt_data_worker python xtuner/v1/train/cli/rl.py --config workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py
+  28791    3135 1839020 250051484 pt_data_worker python xtuner/v1/train/cli/rl.py --config workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py
+  13337    2023 1633844 203213448 ray::JudgerActo ray::JudgerActor
+  15494    2023 1100388 203182692 ray::JudgerActo ray::JudgerActor
+  14895    2023 1099208 203186624 ray::JudgerActo ray::JudgerActor
+  15733    2023 1098624 203181388 ray::JudgerActo ray::JudgerActor
+  15083    2023 1096428 203182568 ray::JudgerActo ray::JudgerActor
+  16714    2023 1060128 203429288 ray::JudgerActo ray::JudgerActor
+  16282    2023 1059932 203429388 ray::JudgerActo ray::JudgerActor
+  16568    2023 1052824 203434512 ray::JudgerActo ray::JudgerActor
+  16425    2023 1050688 203428064 ray::JudgerActo ray::JudgerActor
+  13836    2023 1028624 203187776 ray::JudgerActo ray::JudgerActor
+  14113    2023 1026596 203182448 ray::JudgerActo ray::JudgerActor
+  13669    2023 1026184 203181440 ray::JudgerActo ray::JudgerActor
+  14578    2023 1026048 203189640 ray::JudgerActo ray::JudgerActor
+  38535   13131 1019520 203245176 ray::IDLE  ray::JudgerActor.judge_payload
+  38533   13131 1017580 203245176 ray::IDLE  ray::JudgerActor.judge_payload
+  38534   13131 1016544 203245176 ray::IDLE  ray::JudgerActor.judge_payload
+  38532   13131 1016372 203245176 ray::IDLE  ray::JudgerActor.judge_payload
+   1143       1 970036 4528284 gcs_server    /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/core/src/ray/gcs/gcs_server --log_dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --config_list=eyJvYmplY3Rfc3BpbGxpbmdfY29uZmlnIjogIntcInR5cGVcIjogXCJmaWxlc3lzdGVtXCIsIFwicGFyYW1zXCI6IHtcImRpcmVjdG9yeV9wYXRoXCI6IFwiL3RtcC9yYXlfbG9nL3Nlc3Npb25fMjAyNi0wNi0xNF8xMi0xNi0zM184NzA1MTlfMTA1OVwifX0iLCAiaXNfZXh0ZXJuYWxfc3RvcmFnZV90eXBlX2ZzIjogdHJ1ZX0= --gcs_server_port=6379 --metrics-agent-port=0 --node-ip-address=10.102.252.52 --session-name=session_2026-06-14_12-16-33_870519_1059 --ray-commit=48bd1f8fa43d0e8222b0f57357b99b48c7437ed3 --session-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --node-id=9959a5f1a2b1d9fd422dab0eec2efe7013fb6c56523f694702247219 --stdout_filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/gcs_server.out --stderr_filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/gcs_server.err
+  16012    2023 960152 203185964 ray::JudgerActo ray::JudgerActor
+  15870    2023 958680 203182408 ray::JudgerActo ray::JudgerActor
+  16146    2023 957372 203182464 ray::JudgerActo ray::JudgerActor
+  16860    2023 956692 203187568 ray::JudgerActo ray::JudgerActor
+  41183   13337 948216 203187804 ray::IDLE   ray::JudgerActor.judge_payload
+  41184   13337 947968 203187804 ray::IDLE   ray::JudgerActor.judge_payload
+  41191   13337 947604 203188828 ray::IDLE   ray::JudgerActor.judge_payload
+  41176   13337 947572 203187804 ray::IDLE   ray::JudgerActor.judge_payload
+  12291    2023 904120 202094568 ray::SessionSer ray::SessionServerActor
+  11722    2023 904012 202094428 ray::SessionSer ray::SessionServerActor
+  11414    2023 903920 202094380 ray::SessionSer ray::SessionServerActor
+  12428    2023 903880 202094516 ray::SessionSer ray::SessionServerActor
+  12567    2023 903748 202094352 ray::SessionSer ray::SessionServerActor
+  12027    2023 903700 202092320 ray::SessionSer ray::SessionServerActor
+  12709    2023 903664 202094536 ray::SessionSer ray::SessionServerActor
+  11110    2023 903300 202094392 ray::SessionSer ray::SessionServerActor
+   2094    2023 217972 199639780 ray::DashboardA ray::DashboardAgent
+   1353    1213 202328 919768 ray-dashboard-S ray-dashboard-StateHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=50)" --multiprocessing-fork)
+   2763     942 181028 3074324 ray           /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/ray job submit --address=http://127.0.0.1:8265 --runtime-env-json={   "env_vars": {     "WORK_DIR": "/mnt/shared-storage-user/huanghaian/code/xtuner/work_dirs_rl_6/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528",     "MODEL_PATH": "fake_interns2_35b",     "DATA_PATH": "fake_interns2_data",     "EVAL_DATA_PATH": "",     "WORLD_SIZE": "8",     "MASTER_ADDR": "10.102.252.52",     "MASTER_PORT": "6000",     "RAY_MASTER_ADDR": "10.102.252.52",     "ACCELERATOR": "GPU",     "XTUNER_USE_FA3": "1",     "XTUNER_LOG_LEVEL": "INFO",     "PYTHONPATH": ":/mnt/shared-storage-user/huanghaian/code/xtuner:/mnt/shared-storage-user/huanghaian/code/gitlab/lagent:/mnt/shared-storage-user/huanghaian/code/gitlab/crg_rl_projects/src:/mnt/shared-storage-user/huanghaian/code/lmdeploy:/mnt/shared-storage-user/huanghaian/code/xtuner:/mnt/shared-storage-user/llmit/user/guyuzhe/20250708/lvchengqi/projects/moe_rl/InternBootcamp:",     "PYTHONUNBUFFERED": "1",     "XTUNER_USE_SGLANG": "0",     "XTUNER_USE_LMDEPLOY": "1",     "XTUNER_USE_VLLM": "0",     "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",     "LMDEPLOY_LOG_FILE": "/mnt/shared-storage-user/huanghaian/code/xtuner/work_dirs_rl_6/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528/lmdeploy_log_061412.txt",     "XTUNER_RL_MEM_DIR": "/mnt/shared-storage-user/huanghaian/code/xtuner/work_dirs_rl_6/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528/mem_061412",     "CUDA_DEVICE_MAX_CONNECTIONS": "1",     "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",     "SGLANG_ENABLE_HEALTH_ENDPOINT_GENERATION": "False"   } } -- python xtuner/v1/train/cli/rl.py --config workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py
+   1350    1213 143568 845036 ray-dashboard-N ray-dashboard-NodeHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=41)" --multiprocessing-fork)
+   3021    2023 138384 196647356 ray::JobSupervi ray::JobSupervisor
+   1213       1 133028 976708 python3        /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/dashboard/dashboard.py --host=0.0.0.0 --port=8265 --port-retries=0 --temp-dir=/tmp/ray_log --log-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --session-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --logging-rotate-bytes=536870912 --logging-rotate-backup-count=5 --gcs-address=10.102.252.52:6379 --cluster-id-hex=b118d66c5063248a2d76cf5a66f8a95b40a1912fd241f8278727c937 --node-ip-address=10.102.252.52 --stdout-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/dashboard.out --stderr-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/dashboard.err
+   1351    1213 127636 850148 ray-dashboard-R ray-dashboard-ReportHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=44)" --multiprocessing-fork)
+   3334    2023 125048 196615232 ray::IDLE   ray::IDLE
+   1348    1213 119860 795352 ray-dashboard-E ray-dashboard-EventHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=35)" --multiprocessing-fork)
+   1349    1213 113448 785092 ray-dashboard-J ray-dashboard-JobHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=38)" --multiprocessing-fork)
+   1354    1213 113076 785092 ray-dashboard-T ray-dashboard-TrainHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=53)" --multiprocessing-fork)
+   1346    1213 111772 799428 ray-dashboard-M ray-dashboard-MetricsHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=29)" --multiprocessing-fork)
+   1352    1213 111496 784068 ray-dashboard-S ray-dashboard-ServeHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=47)" --multiprocessing-fork)
+   1347    1213 110540 795336 ray-dashboard-D ray-dashboard-DataHead-0 (/mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=27, pipe_handle=32)" --multiprocessing-fork)
+   1212       1 99640 702324 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -m ray.util.client.server --address=10.102.252.52:6379 --host=10.102.252.52 --port=10001 --mode=proxy --runtime-env-agent-address=http://10.102.252.52:0 --node-id=9959a5f1a2b1d9fd422dab0eec2efe7013fb6c56523f694702247219
+   1211       1 98224 572040 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -u /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/autoscaler/_private/monitor.py --logs-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --logging-rotate-bytes=536870912 --logging-rotate-backup-count=5 --gcs-address=10.102.252.52:6379 --stdout-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/monitor.out --stderr-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/monitor.err --monitor-ip=10.102.252.52
+   2022       1 96392 1879624 python3        /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -u /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/lib/python3.12/site-packages/ray/_private/log_monitor.py --session-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059 --logs-dir=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs --gcs-address=10.102.252.52:6379 --node-ip-address=10.102.252.52 --logging-rotate-bytes=536870912 --logging-rotate-backup-count=5 --stdout-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/log_monitor.out --stderr-filepath=/tmp/ray_log/session_2026-06-14_12-16-33_870519_1059/logs/log_monitor.err
+   2857    2023 93272 196412032 ray::IDLE    ray::IDLE
+   2096    2023 91348 922804 ray::RuntimeEnv ray::RuntimeEnvAgent
+      1       0 66972 1301244 worker-init    /kubebrain/worker-init run --enable-pid-monitor --metrics-addr= -- bash -ecx bash /mnt/shared-storage-user/huanghaian/.tmp/764cb966-66a7-4985-a098-de3702c8a440.sh
+     21       1 56448 1297916 exe            /proc/self/exe run shim --uid 0 --gid 0 -- bash -ecx bash /mnt/shared-storage-user/huanghaian/.tmp/764cb966-66a7-4985-a098-de3702c8a440.sh
+   1345    1213 16748  62576 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(26)
+   8588    8257 15404  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(56)
+   8278    7902 15312  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(56)
+   8941    8579 15312  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(57)
+   8083    7748 15304  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(56)
+   8438    8058 15304  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(56)
+   8778    8425 15296  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(57)
+   7757    7497 15284  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(56)
+   7910    7625 15272  45980 python3         /mnt/shared-storage-user/llmit/user/lvchengqi/uv_venvs/interns2_rl_397b/bin/python3 -c from multiprocessing.resource_tracker import main;main(57)
+  22297       1  5248  10436 tmux: server    tmux new -s ray_mem_debug
+2354084 2353663  5200   9500 ps              ps -eo pid,ppid,rss,vsz,comm,args --sort=-rss
+  20027       0  4468   5020 bash            /bin/bash
+  22298   22297  4464   5156 bash            -bash
+   6016       0  4268   5144 bash            /bin/bash
+    942     839  3640   4892 bash            bash examples/v1/scripts/run_rl_submit.sh workspace/job_sh/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528.py lmdeploy fake_interns2_35b fake_interns2_data
+   3136    3021  3632   4892 bash            /bin/bash -c while kill -s 0 3021; do sleep 1; done; kill -9 -3135
+2353663   22298  3580   4892 bash            bash /mnt/shared-storage-user/huanghaian/code/xtuner/workspace/job_sh/debug.sh
+    806      21  3544   4888 bash            bash /mnt/shared-storage-user/huanghaian/.tmp/764cb966-66a7-4985-a098-de3702c8a440.sh
+    839     806  3540   4888 bash            /bin/bash /mnt/shared-storage-user/huanghaian/code/xtuner/workspace/job_sh/run_64_card_hha.sh
+     23       1  1088   3128 sleep           sleep infinity
+2354081    3136  1068   3132 sleep           sleep 1
+   2764     942  1060   3140 tee             tee -a /mnt/shared-storage-user/huanghaian/code/xtuner/work_dirs_rl_6/interns2-35ba3-base05-20260424a-rl-data260426rc1-56k-badword-mtp4-0528/training_log_061412.txt
+     22       1  1056   3128 sleep           sleep infinity
+# finished_at: 2026-06-15T02:00:42+00:00
+# exit_status: 0
